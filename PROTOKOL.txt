@@ -1,0 +1,181 @@
+Protokol & Operasi Basic Chat
+CHATSERVER
+TUJUAN: melayani client baik yang dari command line maupun yang dari flet
+
+CHATCLIENT
+TUJUAN: menjadi client yang berbasis command line terminal dan merequest chat operation ke server
+
+CHAT
+TUJUAN: memproses string yang diterima oleh server untuk melakukan command yang diinginkan oleh client
+
+ATURAN PROTOKOL:
+- client harus mengirimkan request dalam bentuk string
+- string harus dalam format
+  REQUEST spasi PARAMETER
+- PARAMETER dapat berkembang menjadi PARAMETER1 spasi PARAMETER2 dan seterusnya
+- message chat dapat dipisah juga menggunakan spasi
+
+REQUEST YANG DILAYANI:
+* Jika command tidak dikenali akan menghasilkan pesan
+- "*Maaf, command tidak benar"
+* Jika parameter tidak valid akan menghasilkan pesan
+- status: ERROR
+- data: parameter salah / tidak ada
+* Semua result akan diberikan dalam bentuk JSON dan diakhiri
+dengan character ascii code #13#10#13#10 atau "\r\n\r\n"
+
+1. Auth
+TUJUAN: untuk masuk menggunakan kredensial yang telah terdaftar/tersedia
+PARAMETER: username dan password
+SINTAKS: auth username password
+RESULT:
+- BERHASIL:
+  - Status: “OK”
+  - Data: user tokenid
+- GAGAL:
+  - Status: “ERROR”
+  - Data: “User Tidak Ada”
+
+2. Register
+TUJUAN: untuk mendaftarkan kredensial baru ke sistem / runtime
+PARAMETER: username, password, namalengkap, negara
+SINTAKS: register jokowi 123 joko_widodo indonesia
+RESULT:
+- BERHASIL:
+  - Status: “OK”
+  - Data: registered user tokenid
+- GAGAL:
+  - Status: “ERROR”
+  - Data: “User sudah ada” atau “parameter salah”
+
+3. Addgroup
+TUJUAN: untuk menambahkan group baru di dalam realm / server
+PARAMETER: nama_group
+SINTAKS: addgroup kominfo
+RESULT:
+- BERHASIL:
+  - Status: “OK”
+  - Message: “Add group successful”
+- GAGAL:
+  - Status: “ERROR”
+  - Message: “Session tidak ditemukan”
+
+4. Joingroup
+TUJUAN: untuk masuk ke grup yang sudah ada 
+PARAMETER: nama_group
+SINTAKS: joingroup kominfo
+RESULT:
+- BERHASIL:
+  - Status: “OK”
+  - Message: “Join group successful”
+- GAGAL:
+  - Status: “ERROR”
+  - Message: “Session tidak ditemukan” & “User sudah dalam group”
+
+5. Send
+TUJUAN: untuk mengirim pesan ke user lain
+PARAMETER: username tujuan, pesan
+SINTAKS: send username_tujuan pesan
+RESULT:
+- BERHASIL:
+  - Status: “OK”
+  - Message: “Message sent”
+- GAGAL:
+  - Status: “ERROR”
+  - Message: “Session tidak ditemukan” atau “User tidak ditemukan”
+
+6. Sendgroup
+TUJUAN: untuk mengirim pesan ke grup
+PARAMETER: nama_group, pesan
+SINTAKS: sendgroup nama_group pesan
+RESULT:
+- BERHASIL:
+  - Status: “OK”
+  - Message: “Message sent to group”
+- GAGAL:
+  - Status: “ERROR”
+  - Message: “Session tidak ditemukan” atau “Group tidak ditemukan”
+
+7. Inbox
+TUJUAN: untuk mengambil semua pesan yang diterima user
+PARAMETER: tidak ada
+SINTAKS: inbox
+RESULT:
+- BERHASIL:
+  - Status: “OK”
+  - Data: daftar pesan
+- GAGAL:
+  - Status: “ERROR”
+  - Message: “Session tidak ditemukan”
+
+8. Logout
+TUJUAN: untuk keluar dari sesi user
+PARAMETER: tidak ada
+SINTAKS: logout
+RESULT:
+- BERHASIL:
+  - Status: “OK”
+  - Message: “Logout successful”
+- GAGAL:
+  - Status: “ERROR”
+  - Message: “Session tidak ditemukan”
+
+9. Info
+TUJUAN: untuk mengambil informasi user
+PARAMETER: username
+SINTAKS: info username
+RESULT:
+- BERHASIL:
+  - Status: “OK”
+  - Data: informasi user
+- GAGAL:
+  - Status: “ERROR”
+  - Message: “User tidak ditemukan” atau “Session tidak ditemukan”
+
+10. Addrealm
+TUJUAN: untuk menambahkan realm baru
+PARAMETER: nama_realm
+SINTAKS: addrealm nama_realm
+RESULT:
+- BERHASIL:
+  - Status: “OK”
+  - Message: “Realm added successfully”
+- GAGAL:
+  - Status: “ERROR”
+  - Message: “Realm sudah ada” atau “parameter salah”
+
+11. Sendprivaterealm
+TUJUAN: untuk mengirim pesan ke user di realm lain
+PARAMETER: realm tujuan, username tujuan, pesan
+SINTAKS: sendprivaterealm realm_tujuan username_tujuan pesan
+RESULT:
+- BERHASIL:
+  - Status: “OK”
+  - Message: “Message sent to user in realm”
+- GAGAL:
+  - Status: “ERROR”
+  - Message: “Session tidak ditemukan” atau “Realm/User tidak ditemukan”
+
+12. Sendgrouprealm
+TUJUAN: untuk mengirim pesan ke grup di realm lain
+PARAMETER: realm tujuan, nama_group, pesan
+SINTAKS: sendgrouprealm realm_tujuan nama_group pesan
+RESULT:
+- BERHASIL:
+  - Status: “OK”
+  - Message: “Message sent to group in realm”
+- GAGAL:
+  - Status: “ERROR”
+  - Message: “Session tidak ditemukan” atau “Realm/Group tidak ditemukan”
+
+13. Getrealminbox
+TUJUAN: untuk mengambil semua pesan yang diterima user dari realm lain
+PARAMETER: realm tujuan
+SINTAKS: getrealminbox realm_tujuan
+RESULT:
+- BERHASIL:
+  - Status: “OK”
+  - Data: daftar pesan dari realm
+- GAGAL:
+  - Status: “ERROR”
+  - Message: “Session tidak ditemukan” atau “Realm tidak ditemukan”
